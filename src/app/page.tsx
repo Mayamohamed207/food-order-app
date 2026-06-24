@@ -6,24 +6,16 @@ import Categories from '@/components/menu/Categories/Categories';
 import ProductCard from '@/components/shared/ProductCard/ProductCard';
 import { FavoriteAction, AddToCartAction } from '@/components/menu/MenuCardActions';
 import MenuFilter from '@/components/menu/MenuFilter/MenuFilter';
-import CartDrawer from '@/components/layout/CartDrawer/CartDrawer';
 import { useMenu } from '@/hooks/useMenu';
 import { useLanguage } from '@/context/LanguageContext';
-import { useCart } from '@/context/CartContext';
 import useFilteredMenu from '@/hooks/useFilteredMenu';
-import { ShoppingCart } from 'lucide-react';
 import styles from './page.module.css';
 
 const HomePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [cartOpen, setCartOpen] = useState(false);
   const { items, categories, loading, error } = useMenu(selectedCategory);
   const { t } = useLanguage();
-  const { cartCount } = useCart();
   const { filtered, filters, setFilters, isLoggedIn } = useFilteredMenu(items);
-
-  const openCart = useCallback(() => setCartOpen(true), []);
-  const closeCart = useCallback(() => setCartOpen(false), []);
 
   const handleFilterChange = useCallback((key: 'sort' | 'favoritesOnly', value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -76,15 +68,6 @@ const HomePage = () => {
           )}
         </section>
       </div>
-
-      {cartCount > 0 && (
-        <button className={styles.floatingCart} onClick={openCart}>
-          <ShoppingCart size={20} />
-          <span className={styles.floatingBadge}>{cartCount}</span>
-        </button>
-      )}
-
-      <CartDrawer open={cartOpen} onClose={closeCart} />
     </>
   );
 };

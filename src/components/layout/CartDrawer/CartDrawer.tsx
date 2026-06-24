@@ -1,107 +1,128 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import Image from 'next/image';
-import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
-import Link from 'next/link';
+import { X, Minus, Plus, Trash2, ShoppingCart, CreditCard, Banknote } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { usePlaceOrder } from '@/hooks/usePlaceOrder';
+import { useShipping } from '@/hooks/useShipping';
 import styles from './CartDrawer.module.css';
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
+interface Props { 
+  open: boolean; 
+  onClose: () => void; 
 }
 
 export default function CartDrawer({ open, onClose }: Props) {
   const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
   const { t } = useLanguage();
+  const { placeOrder, loading } = usePlaceOrder();
+  const { options: zones } = useShipping();
+  
+  const [payment, setPayment] = useState<'cash' | 'online'>('cash');
+  const [selectedZone, setSelectedZone] = useState('');
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [open]);
-
-  const handleInc = useCallback((id: string) => updateQuantity(id, 1), [updateQuantity]);
-  const handleDec = useCallback((id: string) => updateQuantity(id, -1), [updateQuantity]);
-  const handleRemove = useCallback((id: string) => removeFromCart(id), [removeFromCart]);
+  const zone = zones.find(z => z.id === selectedZone);
+  const shippingPrice = zone?.price ?? 0;
+  const grandTotal = cartTotal + shippingPrice;
 
   return (
     <>
-      <div
-        className={`${styles.overlay} ${open ? styles.overlayOpen : ''}`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      <aside className={`${styles.drawer} ${open ? styles.drawerOpen : ''}`} role="dialog" aria-label="Cart">
+      <div className={`${styles.overlay} ${open ? styles.overlayOpen : ''}`} onClick={onClose} />
+      <aside className={`${styles.drawer} ${open ? styles.drawerOpen : ''}`}>
         <div className={styles.head}>
-          <h2 className={styles.title}>{t('Your cart', 'سلة التسوق')}</h2>
-          <button className={styles.close} onClick={onClose} aria-label="close">
+          <h2 className={styles.heading}>{t('Shopping Cart', 'سلة التسوق')}</h2>
+          <button className={styles.closeBtn} onClick={onClose}>
             <X size={20} />
           </button>
         </div>
 
-        {cart.length === 0 ? (
-          <div className={styles.empty}>
-            <ShoppingBag size={48} strokeWidth={1} />
-            <p>{t('Your cart is empty', 'السلة فارغة')}</p>
-            <button className={styles.shopBtn} onClick={onClose}>
-              {t('Browse menu', 'تصفح القائمة')}
-            </button>
-          </div>
-        ) : (
-          <>
-            <ul className={styles.list}>
-              {cart.map((item) => (
-                <li key={item.id} className={styles.row}>
-                  <div className={styles.imgBox}>
-                    {item.image_url ? (
-                      <Image src={item.image_url} alt={item.name_en} fill className={styles.img} sizes="56px" />
-                    ) : (
-                      <span className={styles.imgEmoji}>🍽️</span>
-                    )}
-                  </div>
-
-                  <div className={styles.info}>
-                    <p className={styles.itemName}>{t(item.name_en, item.name_ar)}</p>
-                    <p className={styles.itemPrice}>{(item.price * item.quantity).toFixed(2)} EGP</p>
-                  </div>
-
-                  <div className={styles.qty}>
-                    <button onClick={() => handleDec(item.id)} className={styles.qtyBtn} aria-label="decrease">
-                      <Minus size={13} />
-                    </button>
-                    <span className={styles.qtyNum}>{item.quantity}</span>
-                    <button onClick={() => handleInc(item.id)} className={styles.qtyBtn} aria-label="increase">
-                      <Plus size={13} />
-                    </button>
-                  </div>
-
-                  <button className={styles.remove} onClick={() => handleRemove(item.id)} aria-label="remove">
-                    <X size={14} />
+        <div className={styles.scrollArea}>
+          <ul className={styles.list}>
+            {cart.map(item => (
+              <li key={item.id} className={styles.row}>
+                <div className={styles.imgBox}>
+                  {item.image_url ? (
+                    <Image src={item.image_url} alt={item.name_en} fill className={styles.img} />
+                  ) : '🍽️'}
+                </div>
+                <div className={styles.info}>
+                  <p className={styles.name}>{t(item.name_en, item.name_ar)}</p>
+                  <p className={styles.price}>{(item.price * item.quantity).toFixed(0)} EGP</p>
+                </div>
+                <div className={styles.qty}>
+                  <button onClick={() => updateQuantity(item.id, -1)} className={styles.qtyBtn}>
+                    <Minus size={12} />
                   </button>
-                </li>
-              ))}
-            </ul>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.id, 1)} className={styles.qtyBtn}>
+                    <Plus size={12} />
+                  </button>
+                </div>
+                <button onClick={() => removeFromCart(item.id)} className={styles.removeBtn}>
+                  <Trash2 size={15} />
+                </button>
+              </li>
+            ))}
+          </ul>
 
-            <div className={styles.foot}>
-              <div className={styles.totalRow}>
-                <span className={styles.totalLabel}>{t('Total', 'الإجمالي')}</span>
-                <span className={styles.totalAmt}>{cartTotal.toFixed(2)} EGP</span>
-              </div>
-              <Link href="/cart" className={styles.checkoutBtn} onClick={onClose}>
-                {t('Go to checkout', 'إتمام الطلب')}
-              </Link>
+          <div className={styles.divider} />
+
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>{t('Order & Shipping Details', 'بيانات الطلب والتوصيل')}</h2>
+            <input className={styles.input} placeholder={t('Full name *', 'الاسم الكامل *')} />
+            <input className={styles.input} placeholder={t('Phone *', 'رقم الهاتف *')} />
+            <input className={styles.input} placeholder={t('Email', 'البريد الإلكتروني')} />
+            <label className={styles.label}>{t('Select Governorate', 'اختر المحافظة')}</label>
+            <select className={styles.select} onChange={(e) => setSelectedZone(e.target.value)}>
+              <option value="">{t('Select governorate...', 'اختر المحافظة...')}</option>
+              {zones.map(z => (
+                <option key={z.id} value={z.id}>
+                  {t(z.name_en, z.name_ar)}
+                </option>
+              ))}
+            </select>
+            <textarea className={`${styles.input} ${styles.textarea}`} placeholder={t('Detailed address *', 'العنوان التفصيلي *')} />
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.summary}>
+            <div className={styles.summaryRow}>
+              <span>{t('Subtotal', 'المجموع')}</span>
+              <span>{cartTotal.toFixed(0)} EGP</span>
             </div>
-          </>
-        )}
+            <div className={styles.summaryRow}>
+              <span>{t('Shipping', 'الشحن')}</span>
+              <span>{shippingPrice.toFixed(0)} EGP</span>
+            </div>
+            <div className={`${styles.summaryRow} ${styles.grandTotal}`}>
+              <span>{t('Total', 'الإجمالي')}</span>
+              <span>{grandTotal.toFixed(0)} EGP</span>
+            </div>
+          </div>
+
+          <div className={styles.divider} />
+
+          <h2 className={styles.sectionTitle}>{t('Payment method', 'طريقة الدفع')}</h2>
+          <button 
+            className={`${styles.payBtn} ${payment === 'cash' ? styles.payActive : ''}`} 
+            onClick={() => setPayment('cash')}
+          >
+            <Banknote size={17} /> {t('Cash on delivery', 'الدفع عند الاستلام')}
+          </button>
+          <button 
+            className={`${styles.payBtn} ${payment === 'online' ? styles.payActive : ''}`} 
+            onClick={() => setPayment('online')}
+          >
+            <CreditCard size={17} /> {t('Pay online', 'الدفع أونلاين')}
+          </button>
+
+          <button className={styles.placeBtn} disabled={loading}>
+            <ShoppingCart size={18} /> {loading ? t('Placing...', 'جاري...') : t('Confirm & Place Order', 'تأكيد وتقديم الطلب')}
+          </button>
+        </div>
       </aside>
     </>
   );

@@ -73,27 +73,32 @@
 
 .langBtn:hover { border-color: var(--brand); color: var(--brand); }
 
-.cartLink {
-  position: relative;
+.cartBtn {
+  background: transparent !important;
+  border: none !important;
+  padding: 4px !important;
   display: flex;
-  padding: 0.4rem;
-  color: var(--text);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
 }
-
-.cartLink:hover { color: var(--brand); }
 
 .badge {
   position: absolute;
-  top: -2px; inset-inline-end: -2px;
+  top: 0;
+  inset-inline-end: 0;
   background: var(--brand);
   color: var(--white);
   font-size: 0.6rem;
-  font-weight: 700;
-  width: 16px; height: 16px;
+  font-weight: 800;
+  width: 0.8rem;
+  height: 0.8rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
 }
 
 .hamburger {

@@ -1,4 +1,6 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState } from 'react';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
@@ -6,14 +8,12 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import { FavoritesProvider } from '@/context/FavoritesContext';
 import { SearchProvider } from '@/context/SearchContext';
 import Navbar from '@/components/layout/Navbar/Navbar';
+import CartDrawer from '@/components/layout/CartDrawer/CartDrawer';
 import { Toaster } from 'react-hot-toast';
 
-export const metadata: Metadata = {
-  title: 'FoodApp — Order food online',
-  description: "Cairo's best kitchens, delivered fast.",
-};
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const [cartOpen, setCartOpen] = useState(false);
+
   return (
     <html lang="en">
       <body>
@@ -22,8 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CartProvider>
               <FavoritesProvider>
                 <SearchProvider>
-                  <Navbar />
+                  <Navbar onOpenCart={() => setCartOpen(true)} />
                   <main>{children}</main>
+                  <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
                   <Toaster
                     position="bottom-center"
                     toastOptions={{

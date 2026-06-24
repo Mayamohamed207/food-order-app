@@ -12,7 +12,11 @@ import { supabase } from '@/lib/supabaseClient';
 import IconButton from '@/components/shared/IconButton/IconButton';
 import styles from './Navbar.module.css';
 
-function Navbar() {
+interface NavbarProps {
+  onOpenCart: () => void;
+}
+
+function Navbar({ onOpenCart }: NavbarProps) {
   const { user, signOut } = useAuth();
   const { cartCount } = useCart();
   const { t, toggleLanguage, language } = useLanguage();
@@ -123,10 +127,10 @@ function Navbar() {
             )}
           </div>
 
-          <Link href="/cart" className={styles.cartLink} onClick={closeMenu}>
+          <button onClick={onOpenCart} className={styles.cartBtn}>
             <ShoppingCart size={19} />
             {cartCount > 0 && <span className={styles.badge}>{cartCount}</span>}
-          </Link>
+          </button>
 
           <button onClick={toggleMenu} className={styles.hamburger} aria-label="menu">
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
