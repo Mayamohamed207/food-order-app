@@ -2,7 +2,7 @@
 
 import { Toaster } from 'react-hot-toast';
 
-export default function ToastMessages() {
+function ToastMessages() {
   return (
     <Toaster
       position="top-center"
@@ -31,3 +31,5 @@ export default function ToastMessages() {
     />
   );
 }
+
+export default ToastMessages;

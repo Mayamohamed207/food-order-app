@@ -17,7 +17,7 @@ interface Props {
   lang?: 'en' | 'ar';
 }
 
-export default function OrderStatusBadge({ status, lang = 'en' }: Props) {
+ function OrderStatusBadge({ status, lang = 'en' }: Props) {
   const cfg = STATUS_CONFIG[status];
   return (
     <span className={`${styles.badge} ${styles[cfg.cls]}`}>
@@ -25,3 +25,5 @@ export default function OrderStatusBadge({ status, lang = 'en' }: Props) {
     </span>
   );
 }
+
+export default OrderStatusBadge;

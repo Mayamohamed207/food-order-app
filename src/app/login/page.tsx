@@ -10,7 +10,7 @@ import styles from './login.module.css';
 
 type Mode = 'signin' | 'signup';
 
-export default function LoginPage() {
+function LoginPage() {
   const { signIn, signUp, user } = useAuth();
   const { t } = useLanguage();
   const router = useRouter();
@@ -149,3 +149,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default LoginPage;

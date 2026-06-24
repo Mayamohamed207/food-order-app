@@ -11,7 +11,7 @@ import useFavorites from '@/hooks/useFavorites';
 import { MenuItem } from '@/types';
 import styles from './product.module.css';
 
-export default function ProductPage() {
+function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { t } = useLanguage();
@@ -159,3 +159,5 @@ export default function ProductPage() {
     </div>
   );
 }
+
+export default ProductPage;

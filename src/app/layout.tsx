@@ -10,7 +10,8 @@ import { SearchProvider } from '@/context/SearchContext';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import CartDrawer from '@/components/layout/CartDrawer/CartDrawer';
 import Toast from '@/components/shared/ToastMessages/ToastMessages'
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+
+function RootLayout({ children }: { children: React.ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
@@ -34,3 +35,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+export default RootLayout

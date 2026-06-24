@@ -1,3 +1,11 @@
+export interface ProductImage {
+  id: string;
+  product_id: string;
+  image_url: string;
+  display_order: number;
+  label?: string | null;
+}
+
 export interface MenuItem {
   id: string;
   name_en: string;
@@ -8,6 +16,7 @@ export interface MenuItem {
   image_url: string;
   category_id: string;
   is_available: boolean;
+  images?: ProductImage[];
 }
 
 export interface Category {
@@ -47,6 +56,7 @@ export interface Order {
   status: OrderStatus;
   created_at: string;
 }
+
 export interface ShippingZones {
   id: string;
   name_en: string;
