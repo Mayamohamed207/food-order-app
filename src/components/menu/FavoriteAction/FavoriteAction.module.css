@@ -1,0 +1,12 @@
+.heart {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--white);
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-s);
+  transition: color var(--ease), transform var(--ease);
+}
+.heart:hover { transform: scale(1.1); }
+.liked { color: var(--liked); }

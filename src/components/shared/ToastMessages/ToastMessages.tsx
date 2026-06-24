@@ -6,21 +6,26 @@ export default function ToastMessages() {
   return (
     <Toaster
       position="top-center"
-      containerStyle={{ top: '40%' }}
+      containerStyle={{
+        top: '60px', 
+      }}
       toastOptions={{
         style: {
           borderRadius: 'var(--r-m)',
-          background: 'var(--bg)',
-          color: 'var(--text-inv)',
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)', 
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          color: 'var(--text)',
           fontSize: '0.875rem',
-          padding: '12px 20px',
-          border: '1px solid var(--border-inv)',
+          padding: '12px 24px',
+          boxShadow: 'var(--shadow-m)',
         },
         success: { 
-          iconTheme: { primary: 'var(--success)', secondary: 'var(--white)' } 
+          iconTheme: { primary: 'var(--success)', secondary: '#fff' } 
         },
         error: { 
-          iconTheme: { primary: 'var(--error)', secondary: 'var(--white)' } 
+          iconTheme: { primary: 'var(--error)', secondary: '#fff' } 
         },
       }}
     />
