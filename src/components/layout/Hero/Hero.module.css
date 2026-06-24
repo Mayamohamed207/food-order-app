@@ -49,6 +49,8 @@
 }
 
 .italicHighlight {
+  display: block;
+  margin-top: 0.25rem;
   font-family: Georgia, 'Times New Roman', serif;
   font-style: italic;
   font-weight: 600;
@@ -124,7 +126,6 @@
   }
   
   .italicHighlight {
-    display: block;
     margin-top: 0.35rem;
     color: var(--brand);
   }
