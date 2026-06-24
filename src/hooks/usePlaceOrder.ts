@@ -17,7 +17,6 @@ export function usePlaceOrder() {
       shippingZoneId: string,
       shippingPrice: number
     ): Promise<string | null> => {
-      if (!user) { setError('Not authenticated'); return null; }
       setLoading(true);
       setError(null);
 
@@ -25,7 +24,7 @@ export function usePlaceOrder() {
         const { data: order, error: orderErr } = await supabase
           .from('orders')
           .insert({
-            user_id: user.id,
+            user_id: user?.id ?? null,
             total,
             payment_method: paymentMethod,
             status: 'pending',
@@ -52,8 +51,9 @@ export function usePlaceOrder() {
         if (itemsErr) throw itemsErr;
 
         return order.id as string;
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Order failed');
+      } catch (err: any) {
+        console.error('ORDER ERROR:', JSON.stringify(err, null, 2));
+        setError(err instanceof Error ? err.message : err?.message ?? 'Order failed');
         return null;
       } finally {
         setLoading(false);

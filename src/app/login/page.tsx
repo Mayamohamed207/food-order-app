@@ -6,6 +6,7 @@ import { Mail, Lock, User, Eye, EyeOff, Utensils } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth }     from '@/context/AuthContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { supabase }    from '@/lib/supabaseClient';
 import styles from './login.module.css';
 
 type Mode = 'signin' | 'signup';
@@ -22,8 +23,25 @@ function LoginPage() {
   const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
 
+  // Auto-redirect if a user lands here while already authenticated
   useEffect(() => {
-    if (user) router.replace('/');
+    if (!user) return;
+
+    const checkExistingUserRole = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (profile?.role === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace('/');
+      }
+    };
+
+    checkExistingUserRole();
   }, [user, router]);
 
   const handleSubmit = useCallback(async () => {
@@ -33,7 +51,28 @@ function LoginPage() {
     setLoading(true);
     try {
       if (mode === 'signin') {
+        // 1. Authenticate user session credentials
         await signIn(email, password);
+
+        // 2. Fetch the newly signed-in user profile from database context
+        const { data: { user: sessionUser } } = await supabase.auth.getUser();
+        
+        if (sessionUser) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', sessionUser.id)
+            .single();
+
+          // 3. Conditional routing split based on role configurations
+          if (profile?.role === 'admin') {
+            toast.success(t('Welcome back, Admin!', 'مرحباً بعودتك، أيها المشرف!'));
+            router.replace('/admin');
+            return;
+          }
+        }
+
+        // Default fall-through fallback routing target for generic customers
         toast.success(t('Welcome back!', 'مرحباً بعودتك!'));
         router.replace('/');
       } else {

@@ -57,18 +57,20 @@ const HomePage = () => {
           {!loading && !error && filtered.length > 0 && (
             <div className={styles.grid}>
               {filtered.map((item) => (
-               <ProductCard
-                key={item.id}
-                item={item}
-                href={`/product/${item.id}`}
-                overlayActions={<FavoriteAction item={item} />}
-                footerAction={<AddToCartAction item={item} />}
-                />
+                <div key={item.id} id={`product-target-${item.id}`} style={{ transition: 'all 0.4s ease' }}>
+                  <ProductCard
+                    item={item}
+                    href={`/product/${item.id}`}
+                    overlayActions={<FavoriteAction item={item} />}
+                    footerAction={<AddToCartAction item={item} />}
+                  />
+                </div>
               ))}
             </div>
           )}
         </section>
       </div>
+
     </>
   );
 };

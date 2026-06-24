@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useMenu } from '@/hooks/useMenu';
@@ -13,6 +15,7 @@ import EditShipping      from '@/components/Admin/EditShipping/EditShipping';
 import ProductCardActions from '@/components/Admin/ProductCardActions/ProductCardActions';
 import type { MenuItem } from '@/types';
 import styles from './admin.module.css';
+import { toast } from 'react-hot-toast';
 
 type Tab = 'products' | 'orders' | 'categories' | 'shipping';
 
@@ -25,10 +28,14 @@ const TAB_LABELS: Record<Tab, [string, string]> = {
 
 const AdminPage = () => {
   const { t } = useLanguage();
-  const { items, categories, loading, refresh } = useMenu();
+  const { items, categories, loading: menuLoading, refresh } = useMenu();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+
   const [tab, setTab] = useState<Tab>('products');
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   const handleEdit = useCallback((item: MenuItem) => {
     setEditingItem(item);
@@ -51,6 +58,47 @@ const AdminPage = () => {
     setEditingItem(null);
     setShowAddForm(false);
   }, []);
+
+  // 2. RUN AUTHENTICATION & ROLE VERIFICATION SIDE-EFFECTS
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      router.replace('/login');
+      return;
+    }
+
+    const checkAdminRole = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+
+        if (error || data?.role !== 'admin') {
+          toast.error(t('Access Denied: Admins Only', 'غير مسموح بالدخول: للمشرفين فقط')); 
+          
+          router.replace('/');
+          return;
+        }
+
+        setIsVerifying(false);
+      } catch (err) {
+        console.error('Admin verification failure:', err);
+        router.replace('/');
+      }
+    };
+
+    checkAdminRole();
+  }, [user, authLoading, router, t]);
+
+  // 3. CONDITIONAL EARLY RETURNS FOR UI RENDERING (SAFE TO PLACE HERE)
+  if (authLoading || isVerifying) {
+    return <p className={styles.loading}>{t('Verifying credentials...', 'جاري التحقق من الصلاحيات...')}</p>;
+  }
+
+  if (!user) return null;
 
   return (
     <div className={styles.page}>
@@ -91,7 +139,7 @@ const AdminPage = () => {
       )}
 
       {tab === 'products' && !showAddForm && !editingItem && (
-        loading ? (
+        menuLoading ? (
           <p className={styles.loading}>{t('Loading...', 'جاري التحميل...')}</p>
         ) : (
           <div className={styles.grid}>
