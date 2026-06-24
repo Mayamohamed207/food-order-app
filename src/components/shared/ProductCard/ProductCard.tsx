@@ -12,11 +12,10 @@ interface Props {
   href?: string;
   overlayActions?: React.ReactNode;
   footerAction?: React.ReactNode;
-  rating?: number;
   priority?: boolean;
 }
 
-function ProductCard({ item, href, overlayActions, footerAction, rating = 4.5, priority = false }: Props) {
+function ProductCard({ item, href, overlayActions, footerAction, priority = false }: Props) {
   const { t } = useLanguage();
   const name = t(item.name_en, item.name_ar);
 
@@ -47,10 +46,7 @@ function ProductCard({ item, href, overlayActions, footerAction, rating = 4.5, p
       {href ? <Link href={href} className={styles.imgLink}>{image}</Link> : image}
 
       <div className={styles.body}>
-        <span className={styles.rating}>
-          <Star size={11} fill="currentColor" />
-          {rating}
-        </span>
+       
 
         {href ? (
           <Link href={href}>
