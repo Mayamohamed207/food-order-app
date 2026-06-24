@@ -1,0 +1,25 @@
+.btn {
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  color: var(--text);
+}
+
+.btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.dark {
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  color: #fff;
+}
+
+.dark:hover {
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+}
