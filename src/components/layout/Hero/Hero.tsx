@@ -16,16 +16,21 @@ function Hero() {
 
   return (
     <section className={styles.section}>
-      <div
-        className={styles.banner}
-        style={{ backgroundImage: `url(${heroImage})` }}
-      >
-        <div className={styles.overlay} />
+      <div className={styles.banner}>
+        
+        <div 
+          className={styles.bgImage}
+          style={{ backgroundImage: `url(${heroImage})` }}
+        >
+          <div className={styles.overlay} />
+        </div>
+
         <div className={styles.content}>
           <h1 className={styles.h1}>
-            {t("You're live to eat,", 'جعت؟')}
-            <br />
-            {t('Not eat to live.', 'اطلب دلوقتي.')}
+            {t("You live to eat, ", 'جعت؟ ')}
+            <span className={styles.italicHighlight}>
+              {t('Not eat to live.', 'اطلب دلوقتي.')}
+            </span>
           </h1>
           <p className={styles.sub}>
             {t(
@@ -38,6 +43,7 @@ function Hero() {
             <ArrowRight size={15} />
           </button>
         </div>
+
       </div>
     </section>
   );
