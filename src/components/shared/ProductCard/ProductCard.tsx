@@ -13,16 +13,25 @@ interface Props {
   overlayActions?: React.ReactNode;
   footerAction?: React.ReactNode;
   rating?: number;
+  priority?: boolean;
 }
 
-function ProductCard({ item, href, overlayActions, footerAction, rating = 4.5 }: Props) {
+function ProductCard({ item, href, overlayActions, footerAction, rating = 4.5, priority = false }: Props) {
   const { t } = useLanguage();
   const name = t(item.name_en, item.name_ar);
 
   const image = (
     <div className={styles.imgWrap}>
       {item.image_url ? (
-        <Image src={item.image_url} alt={name} fill className={styles.img} sizes="280px" />
+        <Image
+          src={item.image_url}
+          alt={name}
+          fill
+          className={styles.img}
+          sizes="280px"
+          priority={priority}
+          loading={priority ? 'eager' : 'lazy'}
+        />
       ) : (
         <div className={styles.imgPlaceholder}>🍽️</div>
       )}

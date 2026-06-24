@@ -1,30 +1,46 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/context/AuthContext';
-import { CartItem, PaymentMethod } from '@/types';
+import type { CartItem, PaymentMethod, CustomerInfo } from '@/types';
 
 export function usePlaceOrder() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const placeOrder = useCallback(
-    async (cart: CartItem[], total: number, paymentMethod: PaymentMethod): Promise<string | null> => {
+    async (
+      cart: CartItem[],
+      total: number,
+      paymentMethod: PaymentMethod,
+      customerInfo: CustomerInfo,
+      shippingZoneId: string,
+      shippingPrice: number
+    ): Promise<string | null> => {
       if (!user) { setError('Not authenticated'); return null; }
       setLoading(true);
       setError(null);
 
       try {
-        // 1. Insert order
         const { data: order, error: orderErr } = await supabase
           .from('orders')
-          .insert({ user_id: user.id, total, payment_method: paymentMethod, status: 'pending' })
+          .insert({
+            user_id: user.id,
+            total,
+            payment_method: paymentMethod,
+            status: 'pending',
+            customer_name: customerInfo.name,
+            customer_email: customerInfo.email,
+            customer_phone: customerInfo.phone,
+            customer_address: customerInfo.address,
+            shipping_zone_id: shippingZoneId || null,
+            shipping_price: shippingPrice,
+          })
           .select()
           .single();
 
         if (orderErr) throw orderErr;
 
-        // 2. Insert order_items
         const items = cart.map((item) => ({
           order_id: order.id,
           product_id: item.id,
