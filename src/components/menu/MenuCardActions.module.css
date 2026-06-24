@@ -1,0 +1,48 @@
+.heart {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--white);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  box-shadow: var(--shadow-s);
+  transition: color var(--ease), transform var(--ease);
+}
+
+.heart:hover { transform: scale(1.1); }
+.liked { color: var(--liked); }
+
+.addBtn {
+  position: relative;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--brand);
+  border: none;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--ease), transform var(--ease);
+}
+
+.addBtn:hover:not(:disabled) { background: var(--brand-hover); transform: scale(1.08); }
+.addBtn:disabled { background: var(--border); cursor: not-allowed; }
+
+.qtyBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--text);
+  color: var(--white);
+  font-size: 0.6rem;
+  font-weight: 700;
+  border-radius: 999px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
