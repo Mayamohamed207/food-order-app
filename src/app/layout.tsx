@@ -9,8 +9,7 @@ import { FavoritesProvider } from '@/context/FavoritesContext';
 import { SearchProvider } from '@/context/SearchContext';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import CartDrawer from '@/components/layout/CartDrawer/CartDrawer';
-import { Toaster } from 'react-hot-toast';
-
+import Toast from '@/components/shared/ToastMessages/ToastMessages'
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -25,17 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Navbar onOpenCart={() => setCartOpen(true)} />
                   <main>{children}</main>
                   <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-                  <Toaster
-                    position="bottom-center"
-                    toastOptions={{
-                      style: {
-                        borderRadius: '12px',
-                        background: '#1C1C1C',
-                        color: '#fff',
-                        fontSize: '0.875rem',
-                      },
-                    }}
-                  />
+                  <Toast />
                 </SearchProvider>
               </FavoritesProvider>
             </CartProvider>
