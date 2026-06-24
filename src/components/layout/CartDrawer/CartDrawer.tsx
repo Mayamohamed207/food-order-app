@@ -71,7 +71,7 @@ export default function CartDrawer({ open, onClose }: Props) {
 
                   <div className={styles.info}>
                     <p className={styles.itemName}>{t(item.name_en, item.name_ar)}</p>
-                    <p className={styles.itemPrice}>${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className={styles.itemPrice}>{(item.price * item.quantity).toFixed(2)} EGP</p>
                   </div>
 
                   <div className={styles.qty}>
@@ -94,7 +94,7 @@ export default function CartDrawer({ open, onClose }: Props) {
             <div className={styles.foot}>
               <div className={styles.totalRow}>
                 <span className={styles.totalLabel}>{t('Total', 'الإجمالي')}</span>
-                <span className={styles.totalAmt}>${cartTotal.toFixed(2)}</span>
+                <span className={styles.totalAmt}>{cartTotal.toFixed(2)} EGP</span>
               </div>
               <Link href="/cart" className={styles.checkoutBtn} onClick={onClose}>
                 {t('Go to checkout', 'إتمام الطلب')}
