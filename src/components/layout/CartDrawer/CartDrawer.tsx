@@ -1,6 +1,6 @@
 'use client';
 
-import {  useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { X, Minus, Plus, Trash2, ShoppingCart, CreditCard, Banknote, Package } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -15,7 +15,7 @@ interface Props {
   onClose: () => void; 
 }
 
-export default function CartDrawer({ open, onClose }: Props) {
+function CartDrawer({ open, onClose }: Props) {
   const { cart, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
   const { t } = useLanguage();
   const { placeOrder, loading } = usePlaceOrder();
@@ -29,11 +29,18 @@ export default function CartDrawer({ open, onClose }: Props) {
   const shippingPrice = zone?.price ?? 0;
   const grandTotal = cartTotal + shippingPrice;
 
+  const handleBrowse = () => {
+    onClose();
+    const menuSection = document.getElementById('menu-section');
+    if (menuSection) menuSection.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleOrder = async () => {
-    if (!info.name || !info.phone || !info.address || !selectedZone) {
+    if (!info.name || !info.phone || !info.address || !selectedZone || !info.email) {
       toast.error(t('Please fill all required fields', 'يرجى ملء جميع الحقول المطلوبة'));
       return;
     }
+    
     const orderId = await placeOrder(cart, grandTotal, payment, info, selectedZone, shippingPrice);
     if (orderId) {
       clearCart();
@@ -43,13 +50,7 @@ export default function CartDrawer({ open, onClose }: Props) {
       toast.error(t('Failed to place order', 'حدث خطأ أثناء تقديم الطلب'));
     }
   };
-  const handleBrowse = () => {
-    onClose();
-    const menuSection = document.getElementById('menu-section');
-    if (menuSection) {
-      menuSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+
   return (
     <>
       <div className={`${styles.overlay} ${open ? styles.overlayOpen : ''}`} onClick={onClose} />
@@ -61,12 +62,10 @@ export default function CartDrawer({ open, onClose }: Props) {
 
         <div className={styles.scrollArea}>
           {cart.length === 0 ? (
-            <div className={styles.emptyCart}>
-              <Package size={64} strokeWidth={1} />
+            <div className={styles.emptyContainer}>
+              <div className={styles.emptyIcon}><Package size={48} strokeWidth={1.5} /></div>
               <p>{t('Your cart is empty', 'سلة التسوق فارغة')}</p>
-              <button className={styles.placeBtn} onClick={handleBrowse}>
-                {t('Browse Menu', 'تصفح القائمة')}
-              </button>
+              <button className={styles.placeBtn} onClick={handleBrowse}>{t('Browse Menu', 'تصفح القائمة')}</button>
             </div>
           ) : (
             <>
@@ -94,22 +93,41 @@ export default function CartDrawer({ open, onClose }: Props) {
 
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>{t('Order & Shipping Details', 'بيانات الطلب والتوصيل')}</h2>
-                <input className={styles.input} placeholder={t('Full name *', 'الاسم الكامل *')} value={info.name} onChange={e => setInfo({...info, name: e.target.value})} />
-                <input className={styles.input} placeholder={t('Phone *', 'رقم الهاتف *')} value={info.phone} onChange={e => setInfo({...info, phone: e.target.value})} />
-                <input className={styles.input} placeholder={t('Email', 'البريد الإلكتروني')} value={info.email} onChange={e => setInfo({...info, email: e.target.value})} />
-                <select className={styles.select} onChange={(e) => setSelectedZone(e.target.value)}>
+                
+                <label className={styles.label}>{t('Full Name', 'الاسم الكامل')} *</label>
+                <input required className={styles.input} placeholder={t('Full name *', 'الاسم الكامل *')} value={info.name} onChange={e => setInfo({...info, name: e.target.value})} />
+                
+                <label className={styles.label}>{t('Phone Number', 'رقم الهاتف')} *</label>
+                <input required className={styles.input} placeholder={t('Phone *', 'رقم الهاتف *')} value={info.phone} onChange={e => setInfo({...info, phone: e.target.value})} />
+                
+                <label className={styles.label}>{t('Email Address', 'البريد الإلكتروني')} *</label>
+                <input required type="email" className={styles.input} placeholder={t('Email', 'البريد الإلكتروني')} value={info.email} onChange={e => setInfo({...info, email: e.target.value})} />
+                
+                <label className={styles.label}>{t('Select Governorate', 'اختر المحافظة')} *</label>
+                <select required className={styles.select} value={selectedZone} onChange={(e) => setSelectedZone(e.target.value)}>
                   <option value="">{t('Select governorate...', 'اختر المحافظة...')}</option>
-                  {zones.map(z => <option key={z.id} value={z.id}>{t(z.name_en, z.name_ar)}</option>)}
+                  {zones.map(z => (
+                    <option key={z.id} value={z.id}>
+                      {t(z.name_en, z.name_ar)} - {z.price} EGP
+                    </option>
+                  ))}
                 </select>
-                <textarea className={`${styles.input} ${styles.textarea}`} placeholder={t('Detailed address *', 'العنوان التفصيلي *')} value={info.address} onChange={e => setInfo({...info, address: e.target.value})} />
+
+                <label className={styles.label}>{t('Detailed Address', 'العنوان التفصيلي')} *</label>
+                <textarea required className={`${styles.input} ${styles.textarea}`} placeholder={t('Detailed address *', 'العنوان التفصيلي *')} value={info.address} onChange={e => setInfo({...info, address: e.target.value})} />
               </div>
+
+              <div className={styles.divider} />
 
               <div className={styles.summary}>
                 <div className={styles.summaryRow}><span>{t('Subtotal', 'المجموع')}</span><span>{cartTotal.toFixed(0)} EGP</span></div>
                 <div className={styles.summaryRow}><span>{t('Shipping', 'الشحن')}</span><span>{shippingPrice.toFixed(0)} EGP</span></div>
-                <div className={`${styles.summaryRow} ${styles.grandTotal}`}><span>{t('Total', 'الإجمالي')}</span><span>{grandTotal.toFixed(0)} EGP</span></div>
+                <div className={`${styles.summaryRow} ${styles.grandTotal}`}><strong>{t('Total', 'الإجمالي')}</strong> <strong>{grandTotal.toFixed(0)} EGP</strong></div>
               </div>
 
+              <div className={styles.divider} />
+
+              <h2 className={styles.sectionTitle}>{t('Payment method', 'طريقة الدفع')}</h2>
               <button className={`${styles.payBtn} ${payment === 'cash' ? styles.payActive : ''}`} onClick={() => setPayment('cash')}>
                 <Banknote size={17} /> {t('Cash on delivery', 'الدفع عند الاستلام')}
               </button>
@@ -127,3 +145,5 @@ export default function CartDrawer({ open, onClose }: Props) {
     </>
   );
 }
+
+export default CartDrawer;
