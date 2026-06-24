@@ -60,7 +60,6 @@ export default function OrdersPage() {
                   <OrderStatusBadge status={order.status as OrderStatus} lang={language} />
                 </div>
 
-                {/* Items */}
                 <ul className={styles.itemList}>
                   {order.order_items.map((oi, idx) => (
                     <li key={idx} className={styles.itemRow}>
@@ -72,7 +71,7 @@ export default function OrdersPage() {
                       </span>
                       <span className={styles.itemQty}>× {oi.quantity}</span>
                       <span className={styles.itemPrice}>
-                        ${(oi.price_at_order * oi.quantity).toFixed(2)}
+                        {(oi.price_at_order * oi.quantity).toFixed(0)} EGP
                       </span>
                     </li>
                   ))}
@@ -84,7 +83,7 @@ export default function OrdersPage() {
                       ? t('Cash on delivery', 'الدفع عند الاستلام')
                       : t('Online payment', 'الدفع أونلاين')}
                   </span>
-                  <span className={styles.total}>${order.total.toFixed(2)}</span>
+                  <span className={styles.total}>{order.total.toFixed(0)} EGP</span>
                 </div>
               </li>
             ))}
