@@ -12,16 +12,6 @@ interface Props {
   rightSlot?: React.ReactNode;
 }
 
-const BADGE_VARS = ['--brand', '--success', '--star', '--error'];
-
-function getBadgeVar(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return `var(${BADGE_VARS[Math.abs(hash) % BADGE_VARS.length]})`;
-}
-
 function CategoryCard({ nameEn, nameAr, imageUrl, active, onClick, rightSlot }: Props) {
   const { t } = useLanguage();
   const label = t(nameEn, nameAr);
@@ -30,11 +20,13 @@ function CategoryCard({ nameEn, nameAr, imageUrl, active, onClick, rightSlot }: 
   return (
     <div
       className={`${styles.card} ${active ? styles.cardActive : ''} ${onClick ? styles.clickable : ''}`}
-      style={hasImage ? { backgroundImage: `url(${imageUrl})` } : { background: getBadgeVar(nameEn) }}
+      style={hasImage ? { backgroundImage: `url(${imageUrl})` } : { background: 'var(--brand-soft)' }}
       onClick={onClick}
     >
       <div className={styles.overlay} />
-      <span className={styles.label}>{label}</span>
+      <div className={styles.labelWrap}>
+        <span className={styles.label}>{label}</span>
+      </div>
       {rightSlot && <div className={styles.rightSlot}>{rightSlot}</div>}
     </div>
   );

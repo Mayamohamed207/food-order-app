@@ -9,11 +9,12 @@
 
 .clickable {
   cursor: pointer;
-  transition: transform var(--ease);
+  transition: transform var(--ease), box-shadow var(--ease);
 }
 
 .clickable:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 .cardActive {
@@ -24,32 +25,54 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.3) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.15) 35%,
+    rgba(0, 0, 0, 0) 60%
+  );
+}
+
+.labelWrap {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 2;
+}
+
+[dir='rtl'] .labelWrap {
+  left: auto;
+  right: 0.85rem;
 }
 
 .label {
-  position: absolute;
-  top: 0.6rem;
-  left: 0.6rem;
-  z-index: 2;
-  font-size: 1rem;
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: var(--r-full);
+  background: var(--white);
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  color: var(--text);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  box-shadow: var(--shadow-s);
 }
-
-[dir='rtl'] .label { left: auto; right: 0.6rem; }
 
 .rightSlot {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: 0.85rem;
+  right: 0.85rem;
   z-index: 2;
 }
 
-[dir='rtl'] .rightSlot { right: auto; left: 0.5rem; }
+[dir='rtl'] .rightSlot {
+  right: auto;
+  left: 0.85rem;
+}
 
 @media (max-width: 640px) {
-  .label { font-size: 0.95rem; top: 0.5rem; left: 0.5rem; }
-  [dir='rtl'] .label { right: 0.5rem; }
+  .label {
+    font-size: 0.78rem;
+    padding: 0.32rem 0.8rem;
+  }
 }
