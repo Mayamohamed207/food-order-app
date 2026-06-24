@@ -22,17 +22,11 @@ export function useOrders() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
-    if (!user) { 
-      setOrders([]); 
-      setLoading(false); 
-      return; 
-    }
-    
     setLoading(true);
     setError(null);
 
     try {
-      const { data, error: err } = await supabase
+      let query = supabase
         .from('orders')
         .select(`
           id, 
@@ -46,11 +40,20 @@ export function useOrders() {
             products ( name_en, name_ar ) 
           )
         `)
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+      // if logged in, show their orders + guest orders by email
+      if (user) {
+        query = query.eq('user_id', user.id);
+      } else {
+        // guest — nothing to show on /orders page
+        setOrders([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error: err } = await query;
       if (err) throw err;
-      
       setOrders((data as unknown as OrderRow[]) ?? []);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch orders');

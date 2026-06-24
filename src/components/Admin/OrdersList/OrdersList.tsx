@@ -28,11 +28,14 @@ const OrdersList = () => {
         id, status, payment_method, total, created_at,
         customer_name, customer_email, customer_phone, customer_address,
         shipping_price,
-        profiles ( full_name ),
         order_items ( quantity, price_at_order, products ( name_en, name_ar ) )
       `)
       .order('created_at', { ascending: false })
-      .then(({ data }) => { setOrders(data ?? []); setLoading(false); });
+      .then(({ data, error }) => {
+        console.log('ORDERS:', data, 'ERR:', error);
+        setOrders(data ?? []);
+        setLoading(false);
+      });
   }, []);
 
   const changeStatus = useCallback(async (id: string, status: string) => {
@@ -57,7 +60,7 @@ const OrdersList = () => {
           <div className={styles.info}>
             <div className={styles.top}>
               <span className={styles.orderId}>#{order.id.slice(0, 8)}</span>
-              <span className={styles.name}>{order.customer_name ?? order.profiles?.full_name ?? t('Guest', 'زائر')}</span>
+              <span className={styles.name}>{order.customer_name ?? t('Guest', 'زائر')}</span>
             </div>
 
             <div className={styles.contact}>
