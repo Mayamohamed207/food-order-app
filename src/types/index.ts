@@ -14,6 +14,7 @@ export interface Category {
   id: string;
   name_en: string;
   name_ar: string;
+  image_url?: string | null;
 }
 
 export interface CartItem {
